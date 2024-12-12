@@ -1,4 +1,4 @@
-package com.example.piedrapapeltijera
+package com.example.piedrapapeltijera.parametros
 
 object Rutas {
     val login = "login"

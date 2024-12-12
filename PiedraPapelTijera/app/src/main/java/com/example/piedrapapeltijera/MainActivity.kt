@@ -4,20 +4,23 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.piedrapapeltijera.modelos.Usuario
+import com.example.piedrapapeltijera.parametros.Rutas
 import com.example.piedrapapeltijera.ui.theme.PiedraPapelTijeraTheme
+import com.example.piedrapapeltijera.ventanas.VentanaLogin
+import com.example.piedrapapeltijera.ventanas.VentanaPartidaMaquina
+import com.example.piedrapapeltijera.ventanas.VentanaRegistro
+import com.example.piedrapapeltijera.viewModels.LoginViewModel
+import com.example.piedrapapeltijera.viewModels.MainViewModel
+import com.example.piedrapapeltijera.viewModels.VentanaPartidaViewModel
 
 class MainActivity : ComponentActivity() {
     private val loginViewModel = LoginViewModel()
+    private val partidaViewModel =  VentanaPartidaViewModel()
+    private val mainViewModel = MainViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,10 +29,13 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = Rutas.login){
                     composable(Rutas.login){
-                        VentanaLogin(navController, loginViewModel)
+                        VentanaLogin(navController, loginViewModel, mainViewModel)
                     }
                     composable(Rutas.registro){
-                        VentanaRegistro(navController, loginViewModel)
+                        VentanaRegistro(navController, loginViewModel, mainViewModel)
+                    }
+                    composable(Rutas.partidaMaquina){
+                        VentanaPartidaMaquina(navController, partidaViewModel, mainViewModel)
                     }
                 }
             }
