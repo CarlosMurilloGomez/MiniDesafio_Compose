@@ -53,33 +53,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VentanaRegistro(navController: NavController, viewModel: LoginViewModel, mainViewModel: MainViewModel) {
     Scaffold(
         topBar = {
-            var mostrarSalir by remember { mutableStateOf(false) }
-            TopAppBar(
-                colors = topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text("Registrar cuenta")
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.navigate(Rutas.login)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                }
-            )
+            TopBarRegistro(navController)
         }) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding),
@@ -128,7 +106,7 @@ fun Registro(navController: NavController, viewModel: LoginViewModel, mainViewMo
                 error += "\n-No se permiten espacios\n\t en la contraseña"
             }
             if (error.isEmpty()) {
-                viewModel.registrar(Usuario("", nombre.trim(), email.trim(), fechaNac, password.trim()))
+                viewModel.registrar(Usuario("", nombre.trim().lowercase(), email.trim(), fechaNac, password.trim()))
 
             }else {
                 mostrarError = true
@@ -143,6 +121,7 @@ fun Registro(navController: NavController, viewModel: LoginViewModel, mainViewMo
             Toast.makeText(contexto, "Usuario registrado", Toast.LENGTH_SHORT).show()
             mainViewModel.iniciarSesion(viewModel.usuarioLogeado.value!!)
             viewModel.restablecerRegistrado()
+            mainViewModel.actualizarRutaActual(Rutas.partidaMaquina)
             navController.navigate(Rutas.partidaMaquina)
         }else{
             Toast.makeText(contexto, "El usuario ya existe", Toast.LENGTH_SHORT).show()

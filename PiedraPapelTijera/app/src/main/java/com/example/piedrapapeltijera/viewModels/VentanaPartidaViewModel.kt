@@ -110,9 +110,21 @@ class VentanaPartidaViewModel {
             _partida.value!!.estado = 2
         }
         val partida = _partida.value!!
+
+        val partidaSinId = hashMapOf(
+            "estado" to partida.estado,
+            "dificultad" to partida.dificultad,
+            "user1" to partida.user1,
+            "user2" to partida.user2,
+            "puntos_user1" to partida.puntos_user1,
+            "puntos_user2" to partida.puntos_user2,
+            "estado_user_1" to partida.estado_user_1,
+            "estado_user_2" to partida.estado_user_2,
+            "idGanador" to partida.idGanador
+        )
         db.collection(Colecciones.colPartidas)
             .document(partida.id)
-            .set(partida)
+            .set(partidaSinId)
             .addOnSuccessListener {
                 Log.e("Carlos", "Partida guardada")
             }
@@ -131,9 +143,22 @@ class VentanaPartidaViewModel {
         _sumandoPuntos.value = true
         _botonesActivados.value = false
 
+        val partida = _partida.value!!
+        val partidaSinId = hashMapOf(
+            "estado" to partida.estado,
+            "dificultad" to partida.dificultad,
+            "user1" to partida.user1,
+            "user2" to partida.user2,
+            "puntos_user1" to partida.puntos_user1,
+            "puntos_user2" to partida.puntos_user2,
+            "estado_user_1" to partida.estado_user_1,
+            "estado_user_2" to partida.estado_user_2,
+            "idGanador" to partida.idGanador
+        )
+
         db.collection(Colecciones.colPartidas)
-            .document(partida.value!!.id)
-            .set(partida.value!!)
+            .document(partida.id)
+            .set(partidaSinId)
             .addOnSuccessListener {
                 _botonesActivados.value = true
                 _sumandoPuntos.value = false
@@ -149,9 +174,22 @@ class VentanaPartidaViewModel {
         _sumandoPuntos.value = true
         _botonesActivados.value = false
 
+        val partida = _partida.value!!
+        val partidaSinId = hashMapOf(
+            "estado" to partida.estado,
+            "dificultad" to partida.dificultad,
+            "user1" to partida.user1,
+            "user2" to partida.user2,
+            "puntos_user1" to partida.puntos_user1,
+            "puntos_user2" to partida.puntos_user2,
+            "estado_user_1" to partida.estado_user_1,
+            "estado_user_2" to partida.estado_user_2,
+            "idGanador" to partida.idGanador
+        )
+
         db.collection(Colecciones.colPartidas)
-            .document(partida.value!!.id)
-            .set(partida.value!!)
+            .document(partida.id)
+            .set(partidaSinId)
             .addOnSuccessListener {
                 _botonesActivados.value = true
                 _sumandoPuntos.value = false
