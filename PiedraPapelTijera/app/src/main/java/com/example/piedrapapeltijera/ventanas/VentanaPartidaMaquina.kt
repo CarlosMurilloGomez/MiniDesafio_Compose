@@ -1,6 +1,7 @@
 package com.example.piedrapapeltijera.ventanas
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,34 +50,12 @@ import com.example.piedrapapeltijera.viewModels.MainViewModel
 import com.example.piedrapapeltijera.viewModels.VentanaPartidaViewModel
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VentanaPartidaMaquina(navController: NavController, viewModel: VentanaPartidaViewModel, mainViewModel: MainViewModel){
     Scaffold(
         topBar = {
-            TopAppBar(
-                colors = topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text("Partida Offline")
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            viewModel.cerrarPartida()
-                            navController.navigate(Rutas.login)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Localized description"
-                        )
-                    }
+            TopBarPartida (viewModel, navController)
 
-                }
-            )
         }) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding),
@@ -221,7 +202,7 @@ fun Puntuacion(partida: Partida, user1: Usuario, user2:Usuario, textoGanadorRond
 
 @Composable
 fun Fotos(jugadaUser1: Int, jugadaUser2: Int){
-    var sizeFotos = 150.dp
+    var sizeFotos = 100.dp
     Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
         Column (){
             when(jugadaUser1){
@@ -260,14 +241,15 @@ fun BotonesJugar(botonesActivados: Boolean, onJugar: (Int) -> Unit){
         Button(onClick = { onJugar(1) }, enabled = botonesActivados) {
             Text(text = "Piedra", fontSize = 20.sp)
         }
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(30.dp))
         Button(onClick = { onJugar(2) }, enabled = botonesActivados) {
             Text(text = "Papel", fontSize = 20.sp)
         }
-        Spacer(modifier = Modifier.width(10.dp))
-        Button(onClick = { onJugar(3) }, enabled = botonesActivados) {
-            Text(text = "Tijeras", fontSize = 20.sp)
-        }
+
+    }
+    Spacer(modifier = Modifier.height(25.dp))
+    Button(onClick = { onJugar(3) }, enabled = botonesActivados) {
+        Text(text = "Tijeras", fontSize = 20.sp)
     }
 }
 
@@ -312,3 +294,10 @@ fun jugar(jugadaUser1: Int, dificultad: Int, onGanaUser : () -> Unit, onGanaMaqu
     }
     return jugadaUser2
 }
+
+
+
+
+
+
+

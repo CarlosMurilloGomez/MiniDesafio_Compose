@@ -45,37 +45,12 @@ import com.example.piedrapapeltijera.parametros.Rutas
 import com.example.piedrapapeltijera.viewModels.LoginViewModel
 import com.example.piedrapapeltijera.viewModels.MainViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VentanaLogin(navController: NavController, viewModel: LoginViewModel, mainViewModel: MainViewModel) {
 
     Scaffold(
         topBar = {
-            var mostrarSalir by remember { mutableStateOf(false) }
-            TopAppBar(
-                colors = topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text("Iniciar Sesion")
-                },
-                actions = {
-                    if (mostrarSalir){
-                        MensajeSalir { mostrarSalir = false }
-                    }
-                    IconButton(
-                        onClick = {
-                            mostrarSalir = true
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                }
-            )
+            TopBarLogin()
         }) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding),
@@ -105,7 +80,7 @@ fun Login(navController: NavController, viewModel: LoginViewModel, mainViewModel
             if (usuario.isEmpty() || contraseña.isEmpty()){
                 Toast.makeText(contexto, "Rellene todos los campos", Toast.LENGTH_SHORT).show()
             }else{
-                viewModel.iniciarSesion(usuario.trim(), contraseña.trim())
+                viewModel.iniciarSesion(usuario.trim().lowercase(), contraseña.trim())
 
             }
         }){
@@ -116,6 +91,7 @@ fun Login(navController: NavController, viewModel: LoginViewModel, mainViewModel
                 Toast.makeText(contexto, "Sesion iniciada", Toast.LENGTH_SHORT).show()
                 mainViewModel.iniciarSesion(usuarioLogeado!!)
                 viewModel.restablecerLogin()
+                mainViewModel.actualizarRutaActual(Rutas.partidaMaquina)
                 navController.navigate(Rutas.partidaMaquina)
             }else{
                 Toast.makeText(contexto, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
@@ -130,7 +106,7 @@ fun Login(navController: NavController, viewModel: LoginViewModel, mainViewModel
 
 
 @Composable
-fun CajasDeTextoLogin(usuario: String, contraseña: String, onUsuarioChange: (String) -> Unit, onContraseñaChange: (String) -> Unit) {
+fun CajasDeTextoLogin(usuario: String, contraseña: String, onUsuarioChange: (String) -> Unit, onChangePassword: (String) -> Unit) {
 
     Column (verticalArrangement = Arrangement.Center, horizontalAlignment = CenterHorizontally){
         Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
@@ -140,7 +116,7 @@ fun CajasDeTextoLogin(usuario: String, contraseña: String, onUsuarioChange: (St
 
         Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
             var showPassword by remember { mutableStateOf(value = false) }
-            TextField(value = contraseña, onValueChange = { onContraseñaChange(it) },
+            TextField(value = contraseña, onValueChange = { onChangePassword(it) },
                 label = { Text("Contraseña")},
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
@@ -187,36 +163,3 @@ fun BotonesLogin(onIniciarSesion: () -> Unit, onRegistrarse: () -> Unit) {
 
 
 
-@Composable
-fun MensajeSalir(onCerrarMensaje: () -> Unit) {
-    val activity = LocalContext.current as Activity
-
-    AlertDialog(
-        onDismissRequest = {
-            onCerrarMensaje()
-        },
-        title = {
-            Text(text = "Salir")
-        },
-        text = {
-            Text("¿Seguro que deseas salir de la aplicación?")
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onCerrarMensaje()
-                    activity.finish()
-                }) {
-                Text("Sí")
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = {
-                    onCerrarMensaje()
-                }) {
-                Text("No")
-            }
-        }
-    )
-}

@@ -4,4 +4,6 @@ object Rutas {
     val login = "login"
     val registro = "registro"
     val partidaMaquina = "partidaMaquina"
+    val perfil = "perfil"
+
 }
