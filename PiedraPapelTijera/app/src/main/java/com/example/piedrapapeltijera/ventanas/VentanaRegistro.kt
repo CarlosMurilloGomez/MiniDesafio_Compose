@@ -1,6 +1,6 @@
-package com.example.piedrapapeltijera
+package com.example.piedrapapeltijera.ventanas
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -44,13 +44,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.piedrapapeltijera.R
+import com.example.piedrapapeltijera.modelos.Usuario
+import com.example.piedrapapeltijera.parametros.Rutas
+import com.example.piedrapapeltijera.viewModels.LoginViewModel
+import com.example.piedrapapeltijera.viewModels.MainViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VentanaRegistro(navController: NavController, viewModel: LoginViewModel) {
+fun VentanaRegistro(navController: NavController, viewModel: LoginViewModel, mainViewModel: MainViewModel) {
     Scaffold(
         topBar = {
             var mostrarSalir by remember { mutableStateOf(false) }
@@ -80,13 +85,13 @@ fun VentanaRegistro(navController: NavController, viewModel: LoginViewModel) {
             modifier = Modifier.padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Registro(navController, viewModel)
+            Registro(navController, viewModel, mainViewModel)
         }
     }
 }
 
 @Composable
-fun Registro(navController: NavController, viewModel: LoginViewModel) {
+fun Registro(navController: NavController, viewModel: LoginViewModel, mainViewModel: MainViewModel) {
     val contexto = LocalContext.current
     var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -96,7 +101,6 @@ fun Registro(navController: NavController, viewModel: LoginViewModel) {
     var mostrarError by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
 
-    viewModel.cargarUsers()
     Column (modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalAlignment = CenterHorizontally) {
         Spacer(modifier = Modifier.height(50.dp))
         CajasDeTextoLogin(nombre, password, { nombre = it }) { password = it }
@@ -110,10 +114,11 @@ fun Registro(navController: NavController, viewModel: LoginViewModel) {
             if (nombre.isEmpty() || password.isEmpty() || email.isEmpty() || fechaNac.isEmpty()) {
                 error += "-Rellene todos los campos"
             }
-            if (!Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
+            if (email.trim().isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
                 error += "\n-Email inválido"
             }
-            if(fechaNac >= SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())){
+
+            if(fechaNac.isNotEmpty() && SimpleDateFormat("dd/MM/yyyy").parse(fechaNac).after(Date())){
                 error += "\n-La fecha debe ser anterior\n\ta la fecha actual"
             }
             if (nombre.trim().contains(" ")) {
@@ -124,6 +129,7 @@ fun Registro(navController: NavController, viewModel: LoginViewModel) {
             }
             if (error.isEmpty()) {
                 viewModel.registrar(Usuario("", nombre.trim(), email.trim(), fechaNac, password.trim()))
+
             }else {
                 mostrarError = true
             }
@@ -135,11 +141,13 @@ fun Registro(navController: NavController, viewModel: LoginViewModel) {
     if (registrado != null) {
         if (registrado == true) {
             Toast.makeText(contexto, "Usuario registrado", Toast.LENGTH_SHORT).show()
-            //navController.navigate(Rutas.partidaMaquina)
+            mainViewModel.iniciarSesion(viewModel.usuarioLogeado.value!!)
+            viewModel.restablecerRegistrado()
+            navController.navigate(Rutas.partidaMaquina)
         }else{
             Toast.makeText(contexto, "El usuario ya existe", Toast.LENGTH_SHORT).show()
+            viewModel.restablecerRegistrado()
         }
-        viewModel.restablecerRegistrado()
     }
 }
 

@@ -1,7 +1,6 @@
-package com.example.piedrapapeltijera
+package com.example.piedrapapeltijera.ventanas
 
 import android.app.Activity
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,10 +41,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.piedrapapeltijera.parametros.Rutas
+import com.example.piedrapapeltijera.viewModels.LoginViewModel
+import com.example.piedrapapeltijera.viewModels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VentanaLogin(navController: NavController, viewModel: LoginViewModel) {
+fun VentanaLogin(navController: NavController, viewModel: LoginViewModel, mainViewModel: MainViewModel) {
+
     Scaffold(
         topBar = {
             var mostrarSalir by remember { mutableStateOf(false) }
@@ -78,20 +81,20 @@ fun VentanaLogin(navController: NavController, viewModel: LoginViewModel) {
             modifier = Modifier.padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Login(navController, viewModel)
+            Login(navController, viewModel, mainViewModel)
         }
     }
 }
 
 
 @Composable
-fun Login(navController: NavController, viewModel: LoginViewModel) {
+fun Login(navController: NavController, viewModel: LoginViewModel, mainViewModel: MainViewModel) {
     val contexto = LocalContext.current
     var usuario by remember { mutableStateOf("") }
     var contraseña by remember { mutableStateOf("") }
-    val login by viewModel.login.observeAsState(0)
+    val login by viewModel.login.observeAsState(null)
+    val usuarioLogeado by viewModel.usuarioLogeado.observeAsState(null)
 
-    viewModel.cargarUsers()
     Column (modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalAlignment = CenterHorizontally){
         Spacer(modifier = Modifier.height(150.dp))
 
@@ -103,20 +106,22 @@ fun Login(navController: NavController, viewModel: LoginViewModel) {
                 Toast.makeText(contexto, "Rellene todos los campos", Toast.LENGTH_SHORT).show()
             }else{
                 viewModel.iniciarSesion(usuario.trim(), contraseña.trim())
+
             }
         }){
             navController.navigate(Rutas.registro)
         }
-        if (login != 0) {
-            when (login) {
-                1 -> Toast.makeText(contexto, "El usuario no existe", Toast.LENGTH_SHORT).show()
-                2 -> Toast.makeText(contexto, "Contraseña incorrecta", Toast.LENGTH_SHORT).show()
-                3 -> {
-                    Toast.makeText(contexto, "Sesion iniciada", Toast.LENGTH_SHORT).show()
-                    //navController.navigate(Rutas.partidaMaquina)
-                }
+        if (login != null) {
+            if (login==true){
+                Toast.makeText(contexto, "Sesion iniciada", Toast.LENGTH_SHORT).show()
+                mainViewModel.iniciarSesion(usuarioLogeado!!)
+                viewModel.restablecerLogin()
+                navController.navigate(Rutas.partidaMaquina)
+            }else{
+                Toast.makeText(contexto, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                viewModel.restablecerLogin()
             }
-            viewModel.restablecerLogin()
+
         }
     }
 }
