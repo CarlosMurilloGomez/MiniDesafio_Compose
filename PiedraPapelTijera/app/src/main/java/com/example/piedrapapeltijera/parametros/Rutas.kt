@@ -5,5 +5,5 @@ object Rutas {
     val registro = "registro"
     val partidaMaquina = "partidaMaquina"
     val perfil = "perfil"
-
+    val listaPartidas = "listaPartidas"
 }

@@ -64,11 +64,11 @@ class PerfilViewModel:ViewModel() {
     fun sacarPartidasGanadas() {
         val partidasRef = db.collection(Colecciones.colPartidas)
 
-        val query1 = partidasRef.whereEqualTo("user1", _usuario.value!!.id)
+        val query1 = partidasRef.whereEqualTo("user1.id", _usuario.value!!.id)
             .whereEqualTo("estado", 1)
             .get()
 
-        val query2 = partidasRef.whereEqualTo("user2", _usuario.value!!.id)
+        val query2 = partidasRef.whereEqualTo("user2.id", _usuario.value!!.id)
             .whereEqualTo("estado", 2)
             .get()
 
@@ -84,11 +84,11 @@ class PerfilViewModel:ViewModel() {
     fun sacarPartidasJugadas() {
         val partidasRef = db.collection(Colecciones.colPartidas)
 
-        val query1 = partidasRef.whereEqualTo("user1", _usuario.value!!.id)
+        val query1 = partidasRef.whereEqualTo("user1.id", _usuario.value!!.id)
             .whereNotEqualTo("estado", 0)
             .get()
 
-        val query2 = partidasRef.whereEqualTo("user2", _usuario.value!!.id)
+        val query2 = partidasRef.whereEqualTo("user2.id", _usuario.value!!.id)
             .whereNotEqualTo("estado", 0)
             .get()
 
