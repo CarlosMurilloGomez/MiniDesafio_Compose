@@ -6,4 +6,8 @@ object Rutas {
     val partidaMaquina = "partidaMaquina"
     val perfil = "perfil"
     val listaPartidas = "listaPartidas"
+    val invitaciones = "invitaciones"
+    val listaUsuarios = "listaUsuarios"
+
+
 }

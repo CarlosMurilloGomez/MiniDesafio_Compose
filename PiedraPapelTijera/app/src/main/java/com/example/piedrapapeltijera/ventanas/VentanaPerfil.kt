@@ -95,7 +95,7 @@ fun Perfil(navController: NavController, viewModel: PerfilViewModel, mainViewMod
 
 @Composable
 fun InfoUsuario(usuario: Usuario) {
-    Column (modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)){
+    Column (modifier = Modifier.padding(horizontal = 20.dp)){
         Row (){
             Text(text = "Nombre: ", fontWeight = FontWeight.Bold)
             Text(text = usuario.nombre)
@@ -111,7 +111,6 @@ fun InfoUsuario(usuario: Usuario) {
         val fechaActual by remember { mutableStateOf(LocalDate.now()) }
         val edad by remember { mutableStateOf(Period.between(fechaNac, fechaActual).years.toString()) }
 
-        Spacer(modifier = Modifier.height(10.dp))
         Row (){
             Text(text = "Edad: ", fontWeight = FontWeight.Bold)
             Text(text = edad+" años")
@@ -189,7 +188,7 @@ fun Estadisticas(viewModel: PerfilViewModel) {
     }
 
     if (partidasJugadas != null && partidasGanadas != null){
-        Column (modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)){
+        Column (modifier = Modifier.padding(horizontal = 20.dp)){
             Text(text = "Estadísticas: ", fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = "Partidas jugadas: "+partidasJugadas)

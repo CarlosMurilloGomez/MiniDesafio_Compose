@@ -1,29 +1,24 @@
 package com.example.piedrapapeltijera.ventanas
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Login
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.SwitchAccount
-import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Call
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.ContentPaste
-import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -37,13 +32,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -51,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,7 +54,7 @@ import androidx.navigation.NavController
 import com.example.piedrapapeltijera.R
 import com.example.piedrapapeltijera.parametros.Rutas
 import com.example.piedrapapeltijera.viewModels.MainViewModel
-import com.example.piedrapapeltijera.viewModels.VentanaPartidaViewModel
+import com.example.piedrapapeltijera.viewModels.PartidaOfflineViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -163,7 +159,9 @@ fun TopBarRegistro(navController: NavController){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarPartida(viewModel: VentanaPartidaViewModel, navController: NavController, onNavigationClick: () -> Unit,){
+fun TopBarPartida(viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel, navController: NavController, onNavigationClick: () -> Unit){
+    val invitaciones by mainViewModel.invitaciones.observeAsState(0)
+    mainViewModel.buscarInvitaciones()
     var mostrarMenuPuntos by remember { mutableStateOf(false) }
     val opciones = listOf("Perfil", "Cerrar Sesión")
 
@@ -181,6 +179,19 @@ fun TopBarPartida(viewModel: VentanaPartidaViewModel, navController: NavControll
             }
         },
         actions = {
+            BadgedBox(modifier = Modifier.padding(15.dp),  badge = {
+                if (invitaciones > 0) {
+                    Badge() { Text(text = invitaciones.toString()) }
+                }
+            }) {
+                Icon(
+                    modifier = Modifier.clickable { navController.navigate(Rutas.invitaciones) },
+                    imageVector = Icons.Filled.Notifications,
+                    tint = colorResource(R.color.notification),
+                    contentDescription = "Localized description"
+                )
+
+            }
             IconButton(onClick = { mostrarMenuPuntos = true }) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
@@ -200,10 +211,16 @@ fun TopBarPartida(viewModel: VentanaPartidaViewModel, navController: NavControll
                 },
                 onDismiss = { mostrarMenuPuntos = false }
             )
+
+
+
         }
 
     )
 }
+
+
+
 
 @Composable
 fun DesplegarMenuPuntos(expanded: Boolean, opciones: List<String>, onItemClick: (String) -> Unit,  onDismiss: () -> Unit) {
@@ -290,9 +307,9 @@ fun MenuHamburguesa(navController: NavController, mainViewModel: MainViewModel, 
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.PlayCircle,
-                            contentDescription = "Jugar Offline"
+                            contentDescription = "Opcion Jugar Offline"
                         )},
-                    label = { Text(text = "Opcion Jugar Offline") },
+                    label = { Text(text = "Jugar Offline") },
                     selected = false,
                     onClick = {
                         mainViewModel.rutaActual.value = Rutas.partidaMaquina
@@ -314,6 +331,20 @@ fun MenuHamburguesa(navController: NavController, mainViewModel: MainViewModel, 
                         scope.launch { drawerState.close() }
                     }
                 )
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Groups,
+                            contentDescription = "Opcion otros jugadores"
+                        )},
+                    label = { Text(text = "Otros jugadores") },
+                    selected = false,
+                    onClick = {
+                        mainViewModel.rutaActual.value = Rutas.listaUsuarios
+                        navController.navigate(Rutas.listaUsuarios)
+                        scope.launch { drawerState.close() }
+                    }
+                )
                 HorizontalDivider()
             }
         }
@@ -324,7 +355,9 @@ fun MenuHamburguesa(navController: NavController, mainViewModel: MainViewModel, 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarListaPartidas(navController: NavController, onNavigationClick: () -> Unit,){
+fun TopBarListaPartidas(titulo:String, navController: NavController, mainViewModel: MainViewModel, onNavigationClick: () -> Unit,){
+    val invitaciones by mainViewModel.invitaciones.observeAsState(0)
+    mainViewModel.buscarInvitaciones()
     var mostrarMenuPuntos by remember { mutableStateOf(false) }
     val opciones = listOf("Perfil", "Cerrar Sesión")
 
@@ -334,7 +367,7 @@ fun TopBarListaPartidas(navController: NavController, onNavigationClick: () -> U
             titleContentColor = MaterialTheme.colorScheme.primary,
         ),
         title = {
-            Text("Lista de partidas")
+            Text(titulo)
         },
         navigationIcon = {
             IconButton(onClick = {onNavigationClick()}) {
@@ -342,6 +375,18 @@ fun TopBarListaPartidas(navController: NavController, onNavigationClick: () -> U
             }
         },
         actions = {
+            BadgedBox(modifier = Modifier.padding(15.dp), badge = {
+                if (invitaciones > 0) {
+                    Badge() { Text(text = invitaciones.toString()) }
+                }
+            }) {
+                Icon(
+                    modifier = Modifier.clickable { navController.navigate(Rutas.invitaciones) },
+                    imageVector = Icons.Filled.Notifications,
+                    tint = colorResource(R.color.notification),
+                    contentDescription = "Localized description"
+                )
+            }
             IconButton(onClick = { mostrarMenuPuntos = true }) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
@@ -362,5 +407,52 @@ fun TopBarListaPartidas(navController: NavController, onNavigationClick: () -> U
             )
         }
 
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBarInvitaciones(navController: NavController, mainViewModel: MainViewModel){
+    var mostrarMenuPuntos by remember { mutableStateOf(false) }
+    val opciones = listOf("Perfil", "Cerrar Sesión")
+    TopAppBar(
+        colors = topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
+        title = {
+            Text("Invitaciones")
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    navController.navigate(mainViewModel.rutaActual.value!!)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Localized description"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { mostrarMenuPuntos = true }) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "Localized description"
+                )
+            }
+            DesplegarMenuPuntos(
+                expanded = mostrarMenuPuntos, opciones,
+                onItemClick = { opcion ->
+                    when (opcion) {
+                        "Perfil" -> navController.navigate(Rutas.perfil)
+                        "Cerrar Sesión" -> navController.navigate(Rutas.login)
+                    }
+                },
+                onDismiss = { mostrarMenuPuntos = false }
+            )
+        }
     )
 }
