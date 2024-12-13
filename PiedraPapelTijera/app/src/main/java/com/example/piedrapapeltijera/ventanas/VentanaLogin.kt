@@ -47,7 +47,6 @@ import com.example.piedrapapeltijera.viewModels.MainViewModel
 
 @Composable
 fun VentanaLogin(navController: NavController, viewModel: LoginViewModel, mainViewModel: MainViewModel) {
-
     Scaffold(
         topBar = {
             TopBarLogin()

@@ -50,7 +50,7 @@ fun VentanaListaPartidas(navController: NavController, viewModel: ListaPartidasV
                 SnackbarHost(hostState = snackbarHostState)
             },
             topBar = {
-                TopBarListaPartidas (navController){
+                TopBarListaPartidas ("Lista de partidas", navController, mainViewModel){
                     corrutineScope.launch {
                         drawerState.apply {
                             if (isClosed) open() else close()
@@ -61,7 +61,6 @@ fun VentanaListaPartidas(navController: NavController, viewModel: ListaPartidasV
             }) { innerPadding ->
             Column(
                 modifier = Modifier.padding(innerPadding),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 ListaPartidas(viewModel, mainViewModel)
             }
@@ -71,28 +70,29 @@ fun VentanaListaPartidas(navController: NavController, viewModel: ListaPartidasV
 
 @Composable
 fun ListaPartidas(viewModel: ListaPartidasViewModel, mainViewModel: MainViewModel) {
-    val partidas by viewModel.partidas.observeAsState(emptyList())
+    val partidas by viewModel.partidas.observeAsState(null)
     var cargaInicial by remember { mutableStateOf(false) }
     if (!cargaInicial){
         viewModel.cargarPartidas(mainViewModel.usuarioLogeado.value!!.id)
         cargaInicial = true
     }
-
-    if (partidas.isEmpty()){
-        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = CenterHorizontally) {
-            Text(text = "AUN NO HAS JUGADO NINGUNA PARTIDA", fontSize = 50.sp,
-                textAlign = TextAlign.Center, modifier = Modifier.padding(20.dp), lineHeight = 50.sp
-            )
+    if (partidas != null) {
+        if (partidas!!.isEmpty()) {
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = CenterHorizontally) {
+                Text(
+                    text = "AUN NO HAS JUGADO NINGUNA PARTIDA",  fontSize = 50.sp,
+                    textAlign = TextAlign.Center, modifier = Modifier.padding(20.dp), lineHeight = 50.sp
+                )
+            }
+        } else {
+            when (opcionesLista()) {
+                1 -> viewModel.cargarPartidas(mainViewModel.usuarioLogeado.value!!.id)
+                2 -> viewModel.cargarGanadas(mainViewModel.usuarioLogeado.value!!.id)
+                3 -> viewModel.cargarPerdidas(mainViewModel.usuarioLogeado.value!!.id)
+            }
+            Lista(partidas!!, mainViewModel.usuarioLogeado.value!!.id)
         }
-    }else{
-        when (opcionesLista()){
-            1 -> viewModel.cargarPartidas(mainViewModel.usuarioLogeado.value!!.id)
-            2 -> viewModel.cargarGanadas(mainViewModel.usuarioLogeado.value!!.id)
-            3 -> viewModel.cargarPerdidas(mainViewModel.usuarioLogeado.value!!.id)
-        }
-        Lista(partidas, mainViewModel.usuarioLogeado.value!!.id)
     }
-
 
 }
 
@@ -100,7 +100,7 @@ fun ListaPartidas(viewModel: ListaPartidasViewModel, mainViewModel: MainViewMode
 @Composable
 fun opcionesLista():Int {
     var selected by remember { mutableStateOf(1) }
-    Row(Modifier.fillMaxWidth().padding(10.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+    Row(Modifier.fillMaxWidth().padding(top = 7.dp, start = 5.dp, end = 10.dp, bottom = 5.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
             RadioButton(selected = selected == 1, onClick = { selected = 1 })
             Text(text = "Todas", modifier = Modifier.clickable { selected = 1 })

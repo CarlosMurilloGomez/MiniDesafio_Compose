@@ -10,6 +10,8 @@ data class Partida(
     var puntos_user2: Int=0,
     var estado_user_1:Int=0,
     var estado_user_2:Int=0,
+    var ultima_jugada_user1:Int=0,
+    var ultima_jugada_user2:Int=0,
     var fecha_hora:HashMap<String, String> = hashMapOf()
 ){
     override fun toString(): String {
