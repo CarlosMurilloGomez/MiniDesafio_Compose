@@ -191,12 +191,12 @@ fun DatePickerModal(
 fun BotonesRegistro(onCancel: () -> Unit = {}, onRegistrarse: () -> Unit = {}) {
 
     Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
-        Button(onClick = { onCancel() }) {
-            Text(text = "Cancelar")
-        }
-        Spacer(modifier = Modifier.width(20.dp))
         Button(onClick = {onRegistrarse() }) {
             Text(text = "Registrarse")
+        }
+        Spacer(modifier = Modifier.width(20.dp))
+        Button(onClick = { onCancel() }) {
+            Text(text = "Cancelar")
         }
     }
 }

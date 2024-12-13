@@ -26,6 +26,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
@@ -48,22 +50,36 @@ import com.example.piedrapapeltijera.modelos.Usuario
 import com.example.piedrapapeltijera.parametros.Rutas
 import com.example.piedrapapeltijera.viewModels.MainViewModel
 import com.example.piedrapapeltijera.viewModels.VentanaPartidaViewModel
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
 fun VentanaPartidaMaquina(navController: NavController, viewModel: VentanaPartidaViewModel, mainViewModel: MainViewModel){
-    Scaffold(
-        topBar = {
-            TopBarPartida (viewModel, navController)
+    MenuHamburguesa(navController, mainViewModel){ corrutineScope, drawerState ->
+        val snackbarHostState = remember { SnackbarHostState() }
+        Scaffold(
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            },
+            topBar = {
+                TopBarPartida (viewModel, navController){
+                    corrutineScope.launch {
+                        drawerState.apply {
+                            if (isClosed) open() else close()
+                        }
+                    }
+                }
 
-        }) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            PartidaMaquina(navController, viewModel, mainViewModel)
+            }) { innerPadding ->
+            Column(
+                modifier = Modifier.padding(innerPadding),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                PartidaMaquina(navController, viewModel, mainViewModel)
+            }
         }
     }
+
 }
 
 @Composable
@@ -88,15 +104,10 @@ fun PartidaMaquina(navController: NavController, viewModel: VentanaPartidaViewMo
         }else {
             if (partida == null) {
                 Spacer(modifier = Modifier.height(60.dp))
-                NuevaPartida() { viewModel.iniciarPartida(Partida(user1 = mainViewModel.usuarioLogeado.value!!.id, user2 = "0", dificultad = it)) }
+                NuevaPartida() { viewModel.iniciarPartida(Partida(user1 = hashMapOf("id" to mainViewModel.usuarioLogeado.value!!.id, "nombre" to mainViewModel.usuarioLogeado.value!!.nombre), user2 = hashMapOf("id" to "0","nombre" to "Máquina"), dificultad = it)) }
             } else {
-                viewModel.obtenerJugadores(partida!!.user1, partida!!.user2)
-                val user1 by viewModel.user1.observeAsState(null)
-                val user2 by viewModel.user2.observeAsState(null)
-                if (user1 != null && user2 != null){
-                    Spacer(modifier = Modifier.height(50.dp))
-                    Puntuacion(partida!!, user1!!, user2!!, textoGanadorRonda)
-                }
+                Spacer(modifier = Modifier.height(50.dp))
+                Puntuacion(partida!!, partida!!.user1.get("nombre")!!, partida!!.user2.get("nombre")!!, textoGanadorRonda)
                 Spacer(modifier = Modifier.height(50.dp))
                 Fotos(jugadaUser1, jugadaUser2)
                 Spacer(modifier = Modifier.height(50.dp))
@@ -119,9 +130,9 @@ fun PartidaMaquina(navController: NavController, viewModel: VentanaPartidaViewMo
                 if ((partida!!.puntos_user1 == 3 || partida!!.puntos_user2 == 3) && !sumandoPuntos){
                     viewModel.terminarPartida()
                     if (partida!!.puntos_user1 == 3){
-                        textoGanadorRonda = "Ganador: "+user1!!.nombre
+                        textoGanadorRonda = "Ganador: "+partida!!.user1.get("nombre")
                     }else{
-                        textoGanadorRonda = "Ganador: "+user2!!.nombre
+                        textoGanadorRonda = "Ganador: "+partida!!.user2.get("nombre")
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                     Button(onClick = {
@@ -193,8 +204,8 @@ fun Dificultad(dificultad: Int, onDificultadChange: (Int) -> Unit = {}) {
 }
 
 @Composable
-fun Puntuacion(partida: Partida, user1: Usuario, user2:Usuario, textoGanadorRonda: String){
-    Text(text = user1.nombre+": "+partida.puntos_user1.toString()+" - "+user2.nombre+": "+partida.puntos_user2.toString(),
+fun Puntuacion(partida: Partida, user1: String, user2:String, textoGanadorRonda: String){
+    Text(text = user1+": "+partida.puntos_user1.toString()+" - "+user2+": "+partida.puntos_user2.toString(),
         fontSize = 30.sp)
     Spacer(modifier = Modifier.height(10.dp))
     Text(text = textoGanadorRonda, fontSize = 20.sp)
