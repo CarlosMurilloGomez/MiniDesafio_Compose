@@ -4,44 +4,54 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.piedrapapeltijera.modelos.Usuario
+import com.example.piedrapapeltijera.parametros.Rutas
 import com.example.piedrapapeltijera.ui.theme.PiedraPapelTijeraTheme
+import com.example.piedrapapeltijera.ventanas.VentanaListaPartidas
+import com.example.piedrapapeltijera.ventanas.VentanaLogin
+import com.example.piedrapapeltijera.ventanas.VentanaPartidaMaquina
+import com.example.piedrapapeltijera.ventanas.VentanaPerfil
+import com.example.piedrapapeltijera.ventanas.VentanaRegistro
+import com.example.piedrapapeltijera.viewModels.ListaPartidasViewModel
+import com.example.piedrapapeltijera.viewModels.LoginViewModel
+import com.example.piedrapapeltijera.viewModels.MainViewModel
+import com.example.piedrapapeltijera.viewModels.PerfilViewModel
+import com.example.piedrapapeltijera.viewModels.VentanaPartidaViewModel
 
 class MainActivity : ComponentActivity() {
+    private val loginViewModel = LoginViewModel()
+    private val partidaViewModel =  VentanaPartidaViewModel()
+    private val listaPartidasViewModel = ListaPartidasViewModel()
+    private val mainViewModel = MainViewModel()
+    private val perfilViewModel = PerfilViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             PiedraPapelTijeraTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = Rutas.login){
+                    composable(Rutas.login){
+                        VentanaLogin(navController, loginViewModel, mainViewModel)
+                    }
+                    composable(Rutas.registro){
+                        VentanaRegistro(navController, loginViewModel, mainViewModel)
+                    }
+                    composable(Rutas.partidaMaquina){
+                        VentanaPartidaMaquina(navController, partidaViewModel, mainViewModel)
+                    }
+                    composable(Rutas.listaPartidas){
+                        VentanaListaPartidas(navController, listaPartidasViewModel, mainViewModel)
+                    }
+                    composable(Rutas.perfil){
+                        VentanaPerfil(navController, perfilViewModel, mainViewModel)
+                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PiedraPapelTijeraTheme {
-        Greeting("Android")
-    }
-}

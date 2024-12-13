@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "352305371858",
+    "project_id": "piedrapapeltijera-d7653",
+    "storage_bucket": "piedrapapeltijera-d7653.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352305371858:android:990cf3daded0792456eb0b",
+        "android_client_info": {
+          "package_name": "com.example.piedrapapeltijera"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwJYrgM8yV3SC3eIcrP3VoepGC5-Y3f6Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
