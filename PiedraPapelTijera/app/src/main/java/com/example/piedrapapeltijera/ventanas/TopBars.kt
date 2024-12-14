@@ -50,6 +50,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.piedrapapeltijera.R
 import com.example.piedrapapeltijera.parametros.Rutas
@@ -159,7 +160,7 @@ fun TopBarRegistro(navController: NavController){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarPartida(viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel, navController: NavController, onNavigationClick: () -> Unit){
+fun TopBarPartida(titulo :String, viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel, navController: NavController, onNavigationClick: () -> Unit){
     val invitaciones by mainViewModel.invitaciones.observeAsState(0)
     mainViewModel.buscarInvitaciones()
     var mostrarMenuPuntos by remember { mutableStateOf(false) }
@@ -171,7 +172,7 @@ fun TopBarPartida(viewModel: PartidaOfflineViewModel, mainViewModel: MainViewMod
             titleContentColor = MaterialTheme.colorScheme.primary,
         ),
         title = {
-            Text("Partida Offline")
+            Text(titulo)
         },
         navigationIcon = {
             IconButton(onClick = {onNavigationClick()}) {
@@ -312,8 +313,8 @@ fun MenuHamburguesa(navController: NavController, mainViewModel: MainViewModel, 
                     label = { Text(text = "Jugar Offline") },
                     selected = false,
                     onClick = {
-                        mainViewModel.rutaActual.value = Rutas.partidaMaquina
-                        navController.navigate(Rutas.partidaMaquina)
+                        mainViewModel.rutaActual.value = Rutas.partidaOffline
+                        navController.navigate(Rutas.partidaOffline)
                         scope.launch { drawerState.close() }
                     }
                 )

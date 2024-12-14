@@ -93,6 +93,13 @@ fun ListaPartidas(viewModel: ListaPartidasViewModel, mainViewModel: MainViewMode
             Lista(partidas!!, mainViewModel.usuarioLogeado.value!!.id)
         }
     }
+    else{
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = CenterHorizontally) {
+            Text(text = "CARGANDO...", fontSize = 30.sp,
+                textAlign = TextAlign.Center, modifier = Modifier.padding(20.dp), lineHeight = 50.sp
+            )
+        }
+    }
 
 }
 

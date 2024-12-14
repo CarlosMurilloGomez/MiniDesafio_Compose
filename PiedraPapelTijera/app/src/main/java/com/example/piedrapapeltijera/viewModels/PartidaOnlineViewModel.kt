@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class PartidaOfflineViewModel: ViewModel() {
+class PartidaOnlineViewModel: ViewModel() {
     val db = Firebase.firestore
 
     private val _partidaPendiente = MutableLiveData<Boolean?>()
@@ -62,27 +62,27 @@ class PartidaOfflineViewModel: ViewModel() {
     val sumandoPuntos: LiveData<Boolean> = _sumandoPuntos
 
     fun iniciarPartida(partida: Partida) {
-            val partidaSinId = hashMapOf(
-                "estado" to partida.estado,
-                "dificultad" to partida.dificultad,
-                "user1" to partida.user1,
-                "user2" to partida.user2,
-                "puntos_user1" to partida.puntos_user1,
-                "puntos_user2" to partida.puntos_user2,
-                "estado_ronda" to partida.estado_ronda,
-                "estado_user_1" to partida.estado_user_1,
-                "estado_user_2" to partida.estado_user_2
-            )
-            db.collection(Colecciones.colPartidas)
-                .add(partidaSinId)
-                .addOnSuccessListener {
-                    _partida.value = Partida(it.id, partida.estado, partida.dificultad, partida.user1, partida.user2,
-                        partida.puntos_user1, partida.puntos_user2)
-                    _botonesActivados.value = true
-                }
-                .addOnFailureListener { e ->
-                    Log.e("Carlos", "Error adding document")
-                }
+        val partidaSinId = hashMapOf(
+            "estado" to partida.estado,
+            "dificultad" to partida.dificultad,
+            "user1" to partida.user1,
+            "user2" to partida.user2,
+            "puntos_user1" to partida.puntos_user1,
+            "puntos_user2" to partida.puntos_user2,
+            "estado_ronda" to partida.estado_ronda,
+            "estado_user_1" to partida.estado_user_1,
+            "estado_user_2" to partida.estado_user_2
+        )
+        db.collection(Colecciones.colPartidas)
+            .add(partidaSinId)
+            .addOnSuccessListener {
+                _partida.value = Partida(it.id, partida.estado, partida.dificultad, partida.user1, partida.user2,
+                    partida.puntos_user1, partida.puntos_user2)
+                _botonesActivados.value = true
+            }
+            .addOnFailureListener { e ->
+                Log.e("Carlos", "Error adding document")
+            }
     }
 
     fun buscarSiHayUnaPartidaPendiente(idUsuario: String) {
@@ -116,7 +116,7 @@ class PartidaOfflineViewModel: ViewModel() {
 
 
         val fechaHoraHoy = hashMapOf("fecha" to LocalDateTime.now(ZoneId.of("Europe/Madrid")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                                    "hora" to LocalDateTime.now( ZoneId.of("Europe/Madrid")).format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+            "hora" to LocalDateTime.now( ZoneId.of("Europe/Madrid")).format(DateTimeFormatter.ofPattern("HH:mm:ss")))
 
         val partidaSinId = hashMapOf(
             "estado" to partida.estado,

@@ -1,6 +1,5 @@
 package com.example.piedrapapeltijera.ventanas
 
-import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,20 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -90,8 +83,8 @@ fun Login(navController: NavController, viewModel: LoginViewModel, mainViewModel
                 Toast.makeText(contexto, "Sesion iniciada", Toast.LENGTH_SHORT).show()
                 mainViewModel.iniciarSesion(usuarioLogeado!!)
                 viewModel.restablecerLogin()
-                mainViewModel.actualizarRutaActual(Rutas.partidaMaquina)
-                navController.navigate(Rutas.partidaMaquina)
+                mainViewModel.actualizarRutaActual(Rutas.partidaOffline)
+                navController.navigate(Rutas.partidaOffline)
             }else{
                 Toast.makeText(contexto, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
                 viewModel.restablecerLogin()

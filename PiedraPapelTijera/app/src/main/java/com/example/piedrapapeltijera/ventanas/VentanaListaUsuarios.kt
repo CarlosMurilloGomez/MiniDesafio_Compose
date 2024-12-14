@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -42,6 +43,7 @@ import com.example.piedrapapeltijera.R
 import com.example.piedrapapeltijera.modelos.Invitacion
 import com.example.piedrapapeltijera.modelos.Partida
 import com.example.piedrapapeltijera.modelos.Usuario
+import com.example.piedrapapeltijera.parametros.Rutas
 import com.example.piedrapapeltijera.viewModels.ListaUsuariosViewModel
 import com.example.piedrapapeltijera.viewModels.MainViewModel
 import kotlinx.coroutines.launch
@@ -76,6 +78,7 @@ fun VentanaListaUsuarios(navController: NavController, viewModel: ListaUsuariosV
 @Composable
 fun BodyUsuarios(navController: NavController, viewModel: ListaUsuariosViewModel, mainViewModel: MainViewModel){
     val contexto = LocalContext.current
+    val partidaEncontrada by mainViewModel.partidaEncontrada.observeAsState(Partida())
     val usuarios by viewModel.usuarios.observeAsState(null)
     val partidasPendientes by viewModel.partidasPendientes.observeAsState(emptyList())
     val invitacionesPendientes by viewModel.invitacionesPendientes.observeAsState(emptyList())
@@ -93,28 +96,39 @@ fun BodyUsuarios(navController: NavController, viewModel: ListaUsuariosViewModel
             }
         } else {
             Spacer(modifier = Modifier.height(5.dp))
-            ListaUsuarios(usuarios!! ,partidasPendientes, invitacionesPendientes, {
+            ListaUsuarios(navController, usuarios!! ,partidasPendientes, invitacionesPendientes, {
                 viewModel.enviarInvitacion(Invitacion("", hashMapOf("id" to mainViewModel.usuarioLogeado.value!!.id, "nombre" to mainViewModel.usuarioLogeado.value!!.nombre) , hashMapOf("id" to it.id, "nombre" to it.nombre), 0))
                 Toast.makeText(contexto, "Invitación de partida enviada", Toast.LENGTH_SHORT).show()
             }){
-                //AQUI SE VA A LA PARTIDA CON EL OTRO JUGADOR
+                mainViewModel.actualizarPartidaOnline(it)
             }
         }
+        if (partidaEncontrada == true){
+            mainViewModel.restablecerPartidaEncontrada()
+            navController.navigate(Rutas.partidaOnline)
+        }
+    }
+    else{
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = CenterHorizontally) {
+            Text(text = "CARGANDO...", fontSize = 30.sp,
+                textAlign = TextAlign.Center, modifier = Modifier.padding(20.dp), lineHeight = 50.sp
+            )
+        }
     }
 
 }
 
 @Composable
-fun ListaUsuarios(usuarios: List<Usuario>, partidasPendientes: List<Partida>, invitacionesPendientes: List<Invitacion>, onInvitar: (Usuario) -> Unit, onJugar: (Usuario) ->Unit) {
+fun ListaUsuarios(navController: NavController, usuarios: List<Usuario>, partidasPendientes: List<Partida>, invitacionesPendientes: List<Invitacion>, onInvitar: (Usuario) -> Unit, onJugar: (Partida) ->Unit) {
     LazyColumn {
         items(usuarios) { usuario ->
-            ItemUsuario(usuario, partidasPendientes, invitacionesPendientes, {onInvitar(usuario)}) {onJugar(usuario)}
+            ItemUsuario(navController, usuario, partidasPendientes, invitacionesPendientes, {onInvitar(usuario)}) {onJugar(it)}
         }
     }
 }
 
 @Composable
-fun ItemUsuario(usuario: Usuario, partidasPendientes: List<Partida>, invitacionesPendientes: List<Invitacion>, onInvitar: (Usuario) -> Unit, onJugar: (Usuario) ->Unit){
+fun ItemUsuario(navController: NavController, usuario: Usuario, partidasPendientes: List<Partida>, invitacionesPendientes: List<Invitacion>, onInvitar: (Usuario) -> Unit, onJugar: (Partida) ->Unit){
     Card(border = BorderStroke(2.dp, Color.Black), modifier = Modifier.fillMaxWidth().padding(top = 5.dp, bottom = 5.dp, start = 1.dp, end = 1.dp),
         colors = cardColors(
             containerColor = colorResource(R.color.usuario),
@@ -124,8 +138,13 @@ fun ItemUsuario(usuario: Usuario, partidasPendientes: List<Partida>, invitacione
             InfoUsuario(usuario)
             Spacer(modifier = Modifier.width(10.dp))
             //si ya tiene una partida iniciada con el usuario logeado
-            if (partidasPendientes.find {(it.user1.get("id") == usuario.id || it.user2.get("id") == usuario.id)} != null){
-                IconButton(onClick = { onJugar(usuario) }, modifier = Modifier.padding(end = 25.dp)) {
+            var partida:Partida? by remember { mutableStateOf(null) }
+            partida = partidasPendientes.find {(it.user1.get("id") == usuario.id || it.user2.get("id") == usuario.id)}
+            if (partida != null){
+                IconButton(onClick = {
+                    onJugar(partida!!)
+                    //navController.navigate(Rutas.partidaOnline)
+                                     }, modifier = Modifier.padding(end = 25.dp)) {
                     Icon(
                         painterResource(R.drawable.ic_jugar),
                         contentDescription = "Jugar",
