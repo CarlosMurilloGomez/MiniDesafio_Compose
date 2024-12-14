@@ -55,11 +55,17 @@ class ListaUsuariosViewModel:ViewModel() {
 
         Tasks.whenAllSuccess<QuerySnapshot>(query1, query2)
             .addOnSuccessListener { results ->
-                val partidasPendientes = results[0].toObjects(Partida::class.java)
-                partidasPendientes.addAll(results[1].toObjects(Partida::class.java))
-                Log.d("Carlos", "Partidas:"+partidasPendientes.toString())
+                val result1 = results[0]
+                val result2 = results[1]
+                val partidas = arrayListOf<Partida>()
+                result1.documents.forEach { document ->
+                    partidas.add(document.toObject(Partida::class.java)!!.copy(id = document.id))
+                }
+                result2.documents.forEach { document ->
+                    partidas.add(document.toObject(Partida::class.java)!!.copy(id = document.id))
+                }
 
-                _partidasPendientes.value = partidasPendientes
+                _partidasPendientes.value = partidas
             }
             .addOnFailureListener{e->
                 Log.e("Carlos", "Error al sacar partidas pendientes", e)

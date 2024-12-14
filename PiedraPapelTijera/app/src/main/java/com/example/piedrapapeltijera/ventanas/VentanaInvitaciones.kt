@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.piedrapapeltijera.R
 import com.example.piedrapapeltijera.modelos.Invitacion
+import com.example.piedrapapeltijera.modelos.Partida
+import com.example.piedrapapeltijera.parametros.Rutas
 import com.example.piedrapapeltijera.viewModels.InvitacionesViewModel
 import com.example.piedrapapeltijera.viewModels.MainViewModel
 
@@ -53,6 +55,7 @@ fun VentanaInvitaciones(navController: NavController,viewModel: InvitacionesView
 }
 @Composable
 fun BodyInvitaciones(navController: NavController, viewModel: InvitacionesViewModel, mainViewModel: MainViewModel){
+    val partidaEncontrada by mainViewModel.partidaEncontrada.observeAsState(null)
     val contexto = LocalContext.current
     val invitaciones by viewModel.invitaciones.observeAsState(null)
     viewModel.buscarInvitaciones(mainViewModel.usuarioLogeado.value!!.id)
@@ -65,30 +68,42 @@ fun BodyInvitaciones(navController: NavController, viewModel: InvitacionesViewMo
                 )
             }
         } else {
-            ListaInvitaciones(invitaciones!!, {
-                //AQUI SE VA A LA PARTIDA CON EL OTRO JUGADOR
+            ListaInvitaciones(navController, invitaciones!!, {
+                mainViewModel.actualizarPartidaOnline(Partida(user1 = hashMapOf("id" to it.user_envia.get("id")!!, "nombre" to it.user_envia.get("nombre")!!), user2 =hashMapOf("id" to mainViewModel.usuarioLogeado.value!!.id, "nombre" to mainViewModel.usuarioLogeado.value!!.nombre)))
+                viewModel.borrarInvitacion(it)
             }){
                 viewModel.borrarInvitacion(it)
                 Toast.makeText(contexto, "Invitación rechazada", Toast.LENGTH_SHORT).show()
 
             }
         }
-    }
+        if (partidaEncontrada == true){
+            mainViewModel.restablecerPartidaEncontrada()
+            navController.navigate(Rutas.partidaOnline)
+        }
 
+    }
+    else{
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = CenterHorizontally) {
+            Text(text = "CARGANDO...", fontSize = 30.sp,
+                textAlign = TextAlign.Center, modifier = Modifier.padding(20.dp), lineHeight = 50.sp
+            )
+        }
+    }
 
 }
 
 @Composable
-fun ListaInvitaciones(invitaciones: List<Invitacion>, onAceptar: (Invitacion) -> Unit, onRechazar: (Invitacion) ->Unit) {
+fun ListaInvitaciones(navController: NavController, invitaciones: List<Invitacion>, onAceptar: (Invitacion) -> Unit, onRechazar: (Invitacion) ->Unit) {
     LazyColumn {
         items(invitaciones) { invitacion ->
-            ItemInvitacion(invitacion, {onAceptar(invitacion)}) {onRechazar(invitacion)}
+            ItemInvitacion(navController, invitacion, {onAceptar(invitacion)}) {onRechazar(invitacion)}
         }
     }
 }
 
 @Composable
-fun ItemInvitacion(invitacion: Invitacion, onAceptar: (Invitacion) -> Unit, onRechazar: (Invitacion) ->Unit){
+fun ItemInvitacion(navController: NavController, invitacion: Invitacion, onAceptar: (Invitacion) -> Unit, onRechazar: (Invitacion) ->Unit){
     Card(border = BorderStroke(2.dp, Color.Black), modifier = Modifier.fillMaxWidth().padding(top = 5.dp, bottom = 5.dp, start = 1.dp, end = 1.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorResource(R.color.notificacion_fondo),
@@ -97,7 +112,10 @@ fun ItemInvitacion(invitacion: Invitacion, onAceptar: (Invitacion) -> Unit, onRe
         Row(modifier = Modifier.fillMaxWidth().padding(10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Invitación a partida de: " + invitacion.user_envia.get("nombre")!!, fontWeight = FontWeight.Bold)
 
-            IconButton(onClick = { onAceptar(invitacion) }) {
+            IconButton(onClick = {
+                onAceptar(invitacion)
+                //navController.navigate(Rutas.partidaOnline)
+            }) {
                 Icon(
                     painterResource(R.drawable.ic_aceptar2),
                     contentDescription = "Aceptar",

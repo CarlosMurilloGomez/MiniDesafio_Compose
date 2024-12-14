@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun VentanaListaPartidas(navController: NavController, viewModel: ListaPartidasViewModel, mainViewModel: MainViewModel) {
-    MenuHamburguesa(navController, mainViewModel){ corrutineScope, drawerState ->
+    MenuHamburguesa(navController, mainViewModel, {}){ corrutineScope, drawerState ->
         val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
             snackbarHost = {
@@ -77,6 +77,11 @@ fun ListaPartidas(viewModel: ListaPartidasViewModel, mainViewModel: MainViewMode
         cargaInicial = true
     }
     if (partidas != null) {
+        when (opcionesLista()) {
+            1 -> viewModel.cargarPartidas(mainViewModel.usuarioLogeado.value!!.id)
+            2 -> viewModel.cargarGanadas(mainViewModel.usuarioLogeado.value!!.id)
+            3 -> viewModel.cargarPerdidas(mainViewModel.usuarioLogeado.value!!.id)
+        }
         if (partidas!!.isEmpty()) {
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = CenterHorizontally) {
                 Text(
@@ -85,12 +90,14 @@ fun ListaPartidas(viewModel: ListaPartidasViewModel, mainViewModel: MainViewMode
                 )
             }
         } else {
-            when (opcionesLista()) {
-                1 -> viewModel.cargarPartidas(mainViewModel.usuarioLogeado.value!!.id)
-                2 -> viewModel.cargarGanadas(mainViewModel.usuarioLogeado.value!!.id)
-                3 -> viewModel.cargarPerdidas(mainViewModel.usuarioLogeado.value!!.id)
-            }
             Lista(partidas!!, mainViewModel.usuarioLogeado.value!!.id)
+        }
+    }
+    else{
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = CenterHorizontally) {
+            Text(text = "CARGANDO...", fontSize = 30.sp,
+                textAlign = TextAlign.Center, modifier = Modifier.padding(20.dp), lineHeight = 50.sp
+            )
         }
     }
 

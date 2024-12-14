@@ -37,15 +37,15 @@ import com.example.piedrapapeltijera.viewModels.PartidaOfflineViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun VentanaPartidaMaquina(navController: NavController, viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel){
-    MenuHamburguesa(navController, mainViewModel){ corrutineScope, drawerState ->
+fun VentanaPartidaOffline(navController: NavController, viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel){
+    MenuHamburguesa(navController, mainViewModel, {viewModel.cerrarPartida()}){ corrutineScope, drawerState ->
         val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
             },
             topBar = {
-                TopBarPartida (viewModel, mainViewModel, navController){
+                TopBarPartida ("Partida Offline", viewModel, mainViewModel, navController){
                     corrutineScope.launch {
                         drawerState.apply {
                             if (isClosed) open() else close()
@@ -58,7 +58,7 @@ fun VentanaPartidaMaquina(navController: NavController, viewModel: PartidaOfflin
                 modifier = Modifier.padding(innerPadding),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                PartidaMaquina(navController, viewModel, mainViewModel)
+                PartidaOffline(viewModel, mainViewModel)
             }
         }
     }
@@ -66,7 +66,7 @@ fun VentanaPartidaMaquina(navController: NavController, viewModel: PartidaOfflin
 }
 
 @Composable
-fun PartidaMaquina(navController: NavController, viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel) {
+fun PartidaOffline(viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel) {
     var textoGanadorRonda by remember { mutableStateOf("") }
     val partidaPendiente by viewModel.partidaPendiente.observeAsState(null)
     var mostrarDialogoReanudar by remember { mutableStateOf(false) }

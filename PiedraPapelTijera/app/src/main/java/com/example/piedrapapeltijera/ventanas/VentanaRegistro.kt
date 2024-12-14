@@ -1,6 +1,5 @@
 package com.example.piedrapapeltijera.ventanas
 
-import android.annotation.SuppressLint
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -12,22 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -121,8 +114,8 @@ fun Registro(navController: NavController, viewModel: LoginViewModel, mainViewMo
             Toast.makeText(contexto, "Usuario registrado", Toast.LENGTH_SHORT).show()
             mainViewModel.iniciarSesion(viewModel.usuarioLogeado.value!!)
             viewModel.restablecerRegistrado()
-            mainViewModel.actualizarRutaActual(Rutas.partidaMaquina)
-            navController.navigate(Rutas.partidaMaquina)
+            mainViewModel.actualizarRutaActual(Rutas.partidaOffline)
+            navController.navigate(Rutas.partidaOffline)
         }else{
             Toast.makeText(contexto, "El usuario ya existe", Toast.LENGTH_SHORT).show()
             viewModel.restablecerRegistrado()
@@ -142,7 +135,7 @@ fun DatePickerFechaNac(fechaNac: String, onFechaChanged: (String) -> Unit) {
     var mostrarDialog by remember { mutableStateOf(false) }
 
     Row (modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-        Text(text = "Fecha: ", fontSize = 20.sp)
+        Text(text = "Fecha de nac.: ", fontSize = 20.sp)
         Icon(
             painter = painterResource(R.drawable.ic_calendario),
             contentDescription = "Calendario",

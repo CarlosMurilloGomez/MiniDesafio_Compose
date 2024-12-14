@@ -13,7 +13,8 @@ import com.example.piedrapapeltijera.ventanas.VentanaInvitaciones
 import com.example.piedrapapeltijera.ventanas.VentanaListaPartidas
 import com.example.piedrapapeltijera.ventanas.VentanaListaUsuarios
 import com.example.piedrapapeltijera.ventanas.VentanaLogin
-import com.example.piedrapapeltijera.ventanas.VentanaPartidaMaquina
+import com.example.piedrapapeltijera.ventanas.VentanaPartidaOffline
+import com.example.piedrapapeltijera.ventanas.VentanaPartidaOnline
 import com.example.piedrapapeltijera.ventanas.VentanaPerfil
 import com.example.piedrapapeltijera.ventanas.VentanaRegistro
 import com.example.piedrapapeltijera.viewModels.InvitacionesViewModel
@@ -23,6 +24,7 @@ import com.example.piedrapapeltijera.viewModels.LoginViewModel
 import com.example.piedrapapeltijera.viewModels.MainViewModel
 import com.example.piedrapapeltijera.viewModels.PerfilViewModel
 import com.example.piedrapapeltijera.viewModels.PartidaOfflineViewModel
+import com.example.piedrapapeltijera.viewModels.PartidaOnlineViewModel
 
 class MainActivity : ComponentActivity() {
     private val loginViewModel = LoginViewModel()
@@ -32,7 +34,7 @@ class MainActivity : ComponentActivity() {
     private val perfilViewModel = PerfilViewModel()
     private val invitacionesViewModel = InvitacionesViewModel()
     private val listaUsuariosViewModel = ListaUsuariosViewModel()
-
+    private val partidaOnlineViewModel = PartidaOnlineViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -46,8 +48,8 @@ class MainActivity : ComponentActivity() {
                     composable(Rutas.registro){
                         VentanaRegistro(navController, loginViewModel, mainViewModel)
                     }
-                    composable(Rutas.partidaMaquina){
-                        VentanaPartidaMaquina(navController, partidaViewModel, mainViewModel)
+                    composable(Rutas.partidaOffline){
+                        VentanaPartidaOffline(navController, partidaViewModel, mainViewModel)
                     }
                     composable(Rutas.listaPartidas){
                         VentanaListaPartidas(navController, listaPartidasViewModel, mainViewModel)
@@ -60,6 +62,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(Rutas.listaUsuarios){
                         VentanaListaUsuarios(navController, listaUsuariosViewModel, mainViewModel)
+                    }
+                    composable(Rutas.partidaOnline){
+                        VentanaPartidaOnline(navController, partidaOnlineViewModel, mainViewModel)
                     }
                 }
             }

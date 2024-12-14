@@ -50,11 +50,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.piedrapapeltijera.R
 import com.example.piedrapapeltijera.parametros.Rutas
 import com.example.piedrapapeltijera.viewModels.MainViewModel
 import com.example.piedrapapeltijera.viewModels.PartidaOfflineViewModel
+import com.example.piedrapapeltijera.viewModels.PartidaOnlineViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -159,7 +161,7 @@ fun TopBarRegistro(navController: NavController){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarPartida(viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel, navController: NavController, onNavigationClick: () -> Unit){
+fun TopBarPartida(titulo :String, viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel, navController: NavController, onNavigationClick: () -> Unit){
     val invitaciones by mainViewModel.invitaciones.observeAsState(0)
     mainViewModel.buscarInvitaciones()
     var mostrarMenuPuntos by remember { mutableStateOf(false) }
@@ -171,7 +173,7 @@ fun TopBarPartida(viewModel: PartidaOfflineViewModel, mainViewModel: MainViewMod
             titleContentColor = MaterialTheme.colorScheme.primary,
         ),
         title = {
-            Text("Partida Offline")
+            Text(titulo)
         },
         navigationIcon = {
             IconButton(onClick = {onNavigationClick()}) {
@@ -185,7 +187,10 @@ fun TopBarPartida(viewModel: PartidaOfflineViewModel, mainViewModel: MainViewMod
                 }
             }) {
                 Icon(
-                    modifier = Modifier.clickable { navController.navigate(Rutas.invitaciones) },
+                    modifier = Modifier.clickable {
+                        viewModel.cerrarPartida()
+                        navController.navigate(Rutas.invitaciones)
+                                                  },
                     imageVector = Icons.Filled.Notifications,
                     tint = colorResource(R.color.notification),
                     contentDescription = "Localized description"
@@ -202,7 +207,10 @@ fun TopBarPartida(viewModel: PartidaOfflineViewModel, mainViewModel: MainViewMod
                 expanded = mostrarMenuPuntos, opciones,
                 onItemClick = { opcion ->
                     when (opcion) {
-                        "Perfil" -> navController.navigate(Rutas.perfil)
+                        "Perfil" -> {
+                            viewModel.cerrarPartida()
+                            navController.navigate(Rutas.perfil)
+                        }
                         "Cerrar Sesión" -> {
                             viewModel.cerrarPartida()
                             navController.navigate(Rutas.login)
@@ -283,7 +291,7 @@ fun TopBarPerfil(navController: NavController, mainViewModel: MainViewModel){
 
 
 @Composable
-fun MenuHamburguesa(navController: NavController, mainViewModel: MainViewModel, scaffold : @Composable (CoroutineScope, DrawerState)->Unit) {
+fun MenuHamburguesa(navController: NavController, mainViewModel: MainViewModel,onSalir :()->Unit,  scaffold : @Composable (CoroutineScope, DrawerState)->Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
@@ -312,8 +320,9 @@ fun MenuHamburguesa(navController: NavController, mainViewModel: MainViewModel, 
                     label = { Text(text = "Jugar Offline") },
                     selected = false,
                     onClick = {
-                        mainViewModel.rutaActual.value = Rutas.partidaMaquina
-                        navController.navigate(Rutas.partidaMaquina)
+                        mainViewModel.rutaActual.value = Rutas.partidaOffline
+                        onSalir()
+                        navController.navigate(Rutas.partidaOffline)
                         scope.launch { drawerState.close() }
                     }
                 )
@@ -327,6 +336,7 @@ fun MenuHamburguesa(navController: NavController, mainViewModel: MainViewModel, 
                     selected = false,
                     onClick = {
                         mainViewModel.rutaActual.value = Rutas.listaPartidas
+                        onSalir()
                         navController.navigate(Rutas.listaPartidas)
                         scope.launch { drawerState.close() }
                     }
@@ -341,6 +351,7 @@ fun MenuHamburguesa(navController: NavController, mainViewModel: MainViewModel, 
                     selected = false,
                     onClick = {
                         mainViewModel.rutaActual.value = Rutas.listaUsuarios
+                        onSalir()
                         navController.navigate(Rutas.listaUsuarios)
                         scope.launch { drawerState.close() }
                     }
@@ -456,3 +467,73 @@ fun TopBarInvitaciones(navController: NavController, mainViewModel: MainViewMode
         }
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBarPartidaOnline(titulo :String, viewModel: PartidaOnlineViewModel, mainViewModel: MainViewModel, navController: NavController, onNavigationClick: () -> Unit){
+    val invitaciones by mainViewModel.invitaciones.observeAsState(0)
+    mainViewModel.buscarInvitaciones()
+    var mostrarMenuPuntos by remember { mutableStateOf(false) }
+    val opciones = listOf("Perfil", "Cerrar Sesión")
+
+    TopAppBar(
+        colors = topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
+        title = {
+            Text(titulo)
+        },
+        navigationIcon = {
+            IconButton(onClick = { onNavigationClick()}) {
+                Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menú hamburguesa")
+            }
+        },
+        actions = {
+            BadgedBox(modifier = Modifier.padding(15.dp),  badge = {
+                if (invitaciones > 0) {
+                    Badge() { Text(text = invitaciones.toString()) }
+                }
+            }) {
+                Icon(
+                    modifier = Modifier.clickable {
+                        viewModel.cerrarPartida()
+                        navController.navigate(Rutas.invitaciones)
+                                                  },
+                    imageVector = Icons.Filled.Notifications,
+                    tint = colorResource(R.color.notification),
+                    contentDescription = "Localized description"
+                )
+
+            }
+            IconButton(onClick = { mostrarMenuPuntos = true }) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "Localized description"
+                )
+            }
+            DesplegarMenuPuntos(
+                expanded = mostrarMenuPuntos, opciones,
+                onItemClick = { opcion ->
+                    when (opcion) {
+                        "Perfil" -> {
+                            viewModel.cerrarPartida()
+                            navController.navigate(Rutas.perfil)
+                        }
+                        "Cerrar Sesión" -> {
+                            viewModel.cerrarPartida()
+                            navController.navigate(Rutas.login)
+                        }
+                    }
+                },
+                onDismiss = { mostrarMenuPuntos = false }
+            )
+
+
+
+        }
+
+    )
+}
+
+

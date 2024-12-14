@@ -1,9 +1,12 @@
 package com.example.piedrapapeltijera.viewModels
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.piedrapapeltijera.modelos.Invitacion
 import com.example.piedrapapeltijera.modelos.Partida
 import com.example.piedrapapeltijera.parametros.Colecciones
 import com.google.firebase.Firebase
@@ -44,24 +47,26 @@ class PartidaOfflineViewModel: ViewModel() {
     val sumandoPuntos: LiveData<Boolean> = _sumandoPuntos
 
     fun iniciarPartida(partida: Partida) {
-            val partidaSinId = hashMapOf(
-                "estado" to partida.estado,
-                "dificultad" to partida.dificultad,
-                "user1" to partida.user1,
-                "user2" to partida.user2,
-                "puntos_user1" to partida.puntos_user1,
-                "puntos_user2" to partida.puntos_user2,
-            )
-            db.collection(Colecciones.colPartidas)
-                .add(partidaSinId)
-                .addOnSuccessListener {
-                    _partida.value = Partida(it.id, partida.estado, partida.dificultad, partida.user1, partida.user2,
-                        partida.puntos_user1, partida.puntos_user2)
-                    _botonesActivados.value = true
-                }
-                .addOnFailureListener { e ->
-                    Log.e("Carlos", "Error adding document")
-                }
+        val partidaSinId = hashMapOf(
+            "estado" to partida.estado,
+            "dificultad" to partida.dificultad,
+            "user1" to partida.user1,
+            "user2" to partida.user2,
+            "puntos_user1" to partida.puntos_user1,
+            "puntos_user2" to partida.puntos_user2,
+            "estado_user_1" to partida.estado_user_1,
+            "estado_user_2" to partida.estado_user_2
+        )
+        db.collection(Colecciones.colPartidas)
+            .add(partidaSinId)
+            .addOnSuccessListener {
+                _partida.value = Partida(it.id, partida.estado, partida.dificultad, partida.user1, partida.user2,
+                    partida.puntos_user1, partida.puntos_user2, partida.estado_user_1, partida.estado_user_2)
+                _botonesActivados.value = true
+            }
+            .addOnFailureListener { e ->
+                Log.e("Carlos", "Error adding document")
+            }
     }
 
     fun buscarSiHayUnaPartidaPendiente(idUsuario: String) {
@@ -77,6 +82,7 @@ class PartidaOfflineViewModel: ViewModel() {
                     _partidaPendiente.value = true
                     partida!!.id = documento.id
                     _partida.value = partida
+                    Log.e("Carlos", partida.toString())
                 }
                 else{
                     _partidaPendiente.value = false
@@ -95,7 +101,7 @@ class PartidaOfflineViewModel: ViewModel() {
 
 
         val fechaHoraHoy = hashMapOf("fecha" to LocalDateTime.now(ZoneId.of("Europe/Madrid")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                                    "hora" to LocalDateTime.now( ZoneId.of("Europe/Madrid")).format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+            "hora" to LocalDateTime.now( ZoneId.of("Europe/Madrid")).format(DateTimeFormatter.ofPattern("HH:mm:ss")))
 
         val partidaSinId = hashMapOf(
             "estado" to partida.estado,
@@ -104,6 +110,8 @@ class PartidaOfflineViewModel: ViewModel() {
             "user2" to partida.user2,
             "puntos_user1" to partida.puntos_user1,
             "puntos_user2" to partida.puntos_user2,
+            "estado_user_1" to partida.estado_user_1,
+            "estado_user_2" to partida.estado_user_2,
             "fecha_hora" to fechaHoraHoy
         )
         db.collection(Colecciones.colPartidas)
@@ -135,6 +143,8 @@ class PartidaOfflineViewModel: ViewModel() {
             "user2" to partida.user2,
             "puntos_user1" to partida.puntos_user1,
             "puntos_user2" to partida.puntos_user2,
+            "estado_user_1" to partida.estado_user_1,
+            "estado_user_2" to partida.estado_user_2
         )
 
         db.collection(Colecciones.colPartidas)
@@ -143,6 +153,7 @@ class PartidaOfflineViewModel: ViewModel() {
             .addOnSuccessListener {
                 _botonesActivados.value = true
                 _sumandoPuntos.value = false
+                Log.e("Carlos", "Documento añadido.")
             }
             .addOnFailureListener { e ->
                 Log.w("Carlos", "Error adding document", e.cause)
@@ -162,6 +173,8 @@ class PartidaOfflineViewModel: ViewModel() {
             "user2" to partida.user2,
             "puntos_user1" to partida.puntos_user1,
             "puntos_user2" to partida.puntos_user2,
+            "estado_user_1" to partida.estado_user_1,
+            "estado_user_2" to partida.estado_user_2
         )
 
         db.collection(Colecciones.colPartidas)
@@ -170,6 +183,7 @@ class PartidaOfflineViewModel: ViewModel() {
             .addOnSuccessListener {
                 _botonesActivados.value = true
                 _sumandoPuntos.value = false
+                Log.e("Carlos", "Documento añadido.")
             }
             .addOnFailureListener { e ->
                 Log.w("Carlos", "Error adding document", e.cause)
