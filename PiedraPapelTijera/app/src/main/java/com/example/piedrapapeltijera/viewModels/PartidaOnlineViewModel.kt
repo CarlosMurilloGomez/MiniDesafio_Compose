@@ -18,25 +18,6 @@ import java.time.format.DateTimeFormatter
 class PartidaOnlineViewModel: ViewModel() {
     val db = Firebase.firestore
 
-    private val _partidaPendiente = MutableLiveData<Boolean?>()
-    val partidaPendiente: LiveData<Boolean?> = _partidaPendiente
-
-    fun reanudarPartidaPendiente(){
-        _partidaPendiente.value = false
-    }
-
-    fun noReanudarPartidaPendiente(){
-        _partidaPendiente.value = false
-
-        db.collection(Colecciones.colPartidas).document(partida.value!!.id)
-            .delete()
-            .addOnSuccessListener {
-                _partida.value = null
-                Log.e("Carlos", "Documento borrado.!")
-            }
-            .addOnFailureListener { e -> Log.w("Carlos", "Error al borrar el documento.", e) }
-    }
-
     private val _partida = MutableLiveData<Partida?>()
     val partida: LiveData<Partida?> = _partida
 
@@ -61,49 +42,7 @@ class PartidaOnlineViewModel: ViewModel() {
     private  val _sumandoPuntos = MutableLiveData<Boolean>()
     val sumandoPuntos: LiveData<Boolean> = _sumandoPuntos
 
-    fun iniciarPartida(partida: Partida) {
-        val partidaSinId = hashMapOf(
-            "estado" to partida.estado,
-            "dificultad" to partida.dificultad,
-            "user1" to partida.user1,
-            "user2" to partida.user2,
-            "puntos_user1" to partida.puntos_user1,
-            "puntos_user2" to partida.puntos_user2,
-            "estado_ronda" to partida.estado_ronda,
-            "estado_user_1" to partida.estado_user_1,
-            "estado_user_2" to partida.estado_user_2
-        )
-        db.collection(Colecciones.colPartidas)
-            .add(partidaSinId)
-            .addOnSuccessListener {
-                _partida.value = Partida(it.id, partida.estado, partida.dificultad, partida.user1, partida.user2,
-                    partida.puntos_user1, partida.puntos_user2)
-                _botonesActivados.value = true
-            }
-            .addOnFailureListener { e ->
-                Log.e("Carlos", "Error adding document")
-            }
-    }
 
-    fun buscarSiHayUnaPartidaPendiente(idUsuario: String) {
-        db.collection(Colecciones.colPartidas)
-            .whereEqualTo("estado", 0)
-            .whereEqualTo("user1.id", idUsuario)
-            .whereEqualTo("user2.id", "0")
-            .get()
-            .addOnSuccessListener { result ->
-                if (!result.isEmpty) {
-                    val documento = result.documents[0]
-                    val partida = documento.toObject(Partida::class.java)
-                    _partidaPendiente.value = true
-                    partida!!.id = documento.id
-                    _partida.value = partida
-                }
-                else{
-                    _partidaPendiente.value = false
-                }
-            }
-    }
 
     fun terminarPartida(){
         _botonesActivados.value = false
@@ -207,7 +146,6 @@ class PartidaOnlineViewModel: ViewModel() {
 
     fun cerrarPartida(){
         _partida.value = null
-        _partidaPendiente.value = null
         _botonesActivados.value = true
     }
 

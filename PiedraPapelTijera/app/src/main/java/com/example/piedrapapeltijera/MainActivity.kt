@@ -24,6 +24,7 @@ import com.example.piedrapapeltijera.viewModels.LoginViewModel
 import com.example.piedrapapeltijera.viewModels.MainViewModel
 import com.example.piedrapapeltijera.viewModels.PerfilViewModel
 import com.example.piedrapapeltijera.viewModels.PartidaOfflineViewModel
+import com.example.piedrapapeltijera.viewModels.PartidaOnlineViewModel
 
 class MainActivity : ComponentActivity() {
     private val loginViewModel = LoginViewModel()
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
     private val perfilViewModel = PerfilViewModel()
     private val invitacionesViewModel = InvitacionesViewModel()
     private val listaUsuariosViewModel = ListaUsuariosViewModel()
-
+    private val partidaOnlineViewModel = PartidaOnlineViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -63,7 +64,7 @@ class MainActivity : ComponentActivity() {
                         VentanaListaUsuarios(navController, listaUsuariosViewModel, mainViewModel)
                     }
                     composable(Rutas.partidaOnline){
-                        VentanaPartidaOnline(navController, partidaViewModel, mainViewModel)
+                        VentanaPartidaOnline(navController, partidaOnlineViewModel, mainViewModel)
                     }
                 }
             }

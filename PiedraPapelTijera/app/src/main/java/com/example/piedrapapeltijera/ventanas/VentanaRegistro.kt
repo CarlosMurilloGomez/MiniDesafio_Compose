@@ -135,7 +135,7 @@ fun DatePickerFechaNac(fechaNac: String, onFechaChanged: (String) -> Unit) {
     var mostrarDialog by remember { mutableStateOf(false) }
 
     Row (modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-        Text(text = "Fecha: ", fontSize = 20.sp)
+        Text(text = "Fecha de nac.: ", fontSize = 20.sp)
         Icon(
             painter = painterResource(R.drawable.ic_calendario),
             contentDescription = "Calendario",

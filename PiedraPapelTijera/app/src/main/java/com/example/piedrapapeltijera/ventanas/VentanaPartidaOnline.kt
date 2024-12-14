@@ -23,23 +23,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.piedrapapeltijera.modelos.Partida
 import com.example.piedrapapeltijera.parametros.Rutas
 import com.example.piedrapapeltijera.viewModels.MainViewModel
 import com.example.piedrapapeltijera.viewModels.PartidaOfflineViewModel
+import com.example.piedrapapeltijera.viewModels.PartidaOnlineViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun VentanaPartidaOnline(navController: NavController, viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel) {
-    MenuHamburguesa(navController, mainViewModel){ corrutineScope, drawerState ->
+fun VentanaPartidaOnline(navController: NavController, viewModel: PartidaOnlineViewModel, mainViewModel: MainViewModel) {
+    MenuHamburguesa(navController, mainViewModel, { viewModel.cerrarPartida() }){ corrutineScope, drawerState ->
         val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
             },
             topBar = {
-                TopBarPartida ("Partida Online", viewModel, mainViewModel, navController){
+                TopBarPartidaOnline ("Partida Online", viewModel, mainViewModel, navController){
                     corrutineScope.launch {
                         drawerState.apply {
                             if (isClosed) open() else close()
@@ -59,7 +61,7 @@ fun VentanaPartidaOnline(navController: NavController, viewModel: PartidaOffline
 }
 
 @Composable
-fun PartidaOnline(viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel) {
+fun PartidaOnline(viewModel: PartidaOnlineViewModel, mainViewModel: MainViewModel) {
     var revanchaPedida by remember { mutableStateOf(false) }
     val contexto = LocalContext.current
     var idUsuario = mainViewModel.usuarioLogeado.value!!.id

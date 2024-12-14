@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun VentanaListaUsuarios(navController: NavController, viewModel: ListaUsuariosViewModel, mainViewModel: MainViewModel) {
-    MenuHamburguesa(navController, mainViewModel){ corrutineScope, drawerState ->
+    MenuHamburguesa(navController, mainViewModel, {}){ corrutineScope, drawerState ->
         val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
             snackbarHost = {

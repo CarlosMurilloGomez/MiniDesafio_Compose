@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun VentanaPartidaOffline(navController: NavController, viewModel: PartidaOfflineViewModel, mainViewModel: MainViewModel){
-    MenuHamburguesa(navController, mainViewModel){ corrutineScope, drawerState ->
+    MenuHamburguesa(navController, mainViewModel, {viewModel.cerrarPartida()}){ corrutineScope, drawerState ->
         val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
             snackbarHost = {
