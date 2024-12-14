@@ -10,5 +10,8 @@
     <color name="error">#FF0000</color>
     <color name="partidaGanada">#4C37FF00</color>
     <color name="partidaPerdida">#6EFF0000</color>
+    <color name="notification">#E7D202</color>
+    <color name="usuario">#2E55DCEF</color>
+    <color name="notificacion_fondo">#2E5E53F4</color>
 
 </resources>

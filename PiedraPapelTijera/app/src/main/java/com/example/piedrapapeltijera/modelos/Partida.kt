@@ -10,6 +10,7 @@ data class Partida(
     var puntos_user2: Int=0,
     var estado_user_1:Int=0,
     var estado_user_2:Int=0,
+    var estado_ronda:Int=0,
     var fecha_hora:HashMap<String, String> = hashMapOf()
 ){
     override fun toString(): String {
@@ -19,15 +20,15 @@ data class Partida(
             else -> "pendiente"
         }
         var dificultad = when (dificultad) {
-            1 -> "Fácil"
-            2 -> "Normal"
-            3 -> "Difícil"
+            1 -> "-Dificultad: Fácil\n"
+            2 -> "-Dificultad: Normal\n"
+            3 -> "-Dificultad: Difícil\n"
             else -> ""
         }
 
         return "-Ganador: $ganador\n"+
                "-Marcador: $puntos_user1 - $puntos_user2\n" +
-               "-Dificultad: $dificultad\n"+
+                dificultad+
                "-Terminada el ${fecha_hora.get("fecha")}\n   a las ${fecha_hora.get("hora")}"
     }
 }
